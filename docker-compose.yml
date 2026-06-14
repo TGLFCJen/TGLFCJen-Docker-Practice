@@ -1,6 +1,6 @@
 services:
   
-  database:
+  postgres-db:
     image: postgres:15-alpine
     container_name: production-db
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
     container_name: backend-container
     restart: unless-stopped
     depends_on:
-      - database
+      - postgres-db
     environment:
       DB_HOST: postgres-db
       DB_USER: ${DB_USER}
