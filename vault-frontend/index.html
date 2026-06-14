@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Link Vault</title>
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-card: #131a2c;
+            --bg-input: #1c253b;
+            --border-color: #263554;
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+            --accent-blue: #0284c7;
+            --accent-glow: #38bdf8;
+            --gradient-folder: linear-gradient(135deg, #6366f1, #3b82f6);
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin: 0 0 8px 0;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        input {
+            padding: 14px 16px;
+            background: var(--bg-input);
+            color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            outline: none;
+            box-sizing: border-box;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        input::placeholder {
+            color: #475569;
+        }
+
+        input:focus {
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+            background: #222d4a;
+        }
+
+        button {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover { background: #0369a1; }
+        button:active { transform: scale(0.98); }
+
+        .search-section { margin: 30px 0; }
+        
+        .search-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 14px 16px 14px 44px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 16px center;
+            background-size: 18px;
+        }
+
+        .folder-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .folder-header {
+            background: #17223b;
+            padding: 16px 20px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .folder-title-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .folder-badge {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gradient-folder);
+            box-shadow: 0 0 8px #38bdf8;
+        }
+
+        .folder-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-radius: 4px;
+            box-shadow: none;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .action-btn:hover { color: var(--text-main); background: #263554; }
+        .action-btn.danger-btn:hover { color: var(--color-danger); background: rgba(239, 113, 113, 0.1); }
+
+        .files-list { display: flex; flex-direction: column; }
+
+        .file-item {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .file-item:hover { background-color: #17223b; }
+        .file-item:not(:last-child) { border-bottom: 1px solid #18233c; }
+
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name { font-weight: 600; font-size: 0.95rem; }
+        
+        .file-link {
+            color: #38bdf8;
+            text-decoration: none;
+            font-size: 0.85rem;
+            word-break: break-all;
+            width: fit-content;
+        }
+
+        .file-control-panel {
+            display: flex;
+            gap: 4px;
+            margin-left: 15px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        .message-box { color: var(--text-muted); text-align: center; padding: 30px; background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2>⚡ DevOps Link Vault</h2>
+        <p>Your minimalist private gateway for cluster URLs and portals</p>
+    </header>
+
+    <div class="input-section">
+        <input type="text" id="linkName" placeholder="Shortcut Name (e.g., GITHUB TGLFC)">
+        <input type="text" id="linkUrl" placeholder="URL (e.g., example.url.com)">
+        <input type="text" id="linkGroup" list="existingFolders" placeholder="📁 Folder name (e.g., Production, Tools)">
+        <datalist id="existingFolders"></datalist>
+        <button onclick="saveLink()">Add to Folder</button>
+    </div>
+
+    <div class="search-section">
+        <input type="text" id="searchBar" class="search-bar" placeholder="Filter through names, URLs, or folders...">
+    </div>
+
+    <div id="foldersContainer" style="display: flex; flex-direction: column; gap: 24px;"></div>
+</div>
+
+<div id="toastNotification" class="toast">📋 Copied to clipboard!</div>
+
+<script>
+    const API_URL = 'http://localhost:9000';
+    let allLinks = []; 
+    let emptyFolders = new Set();
+
+    document.getElementById('searchBar').addEventListener('input', filterLinks);
+
+    async function loadLinks() {
+        try {
+            const res = await fetch(API_URL);
+            allLinks = await res.json(); 
+            updateFolderSuggestions(allLinks);
+            renderFolders(allLinks);       
+        } catch (err) {
+            document.getElementById('foldersContainer').innerHTML = `
+                <div class="message-box" style="color:#ef4444;">⚠️ Failed to connect to the Link Vault API backplane</div>
+            `;
+        }
+    }
+
+    function updateFolderSuggestions(links) {
+        const datalist = document.getElementById('existingFolders');
+        datalist.innerHTML = '';
+        const uniqueFolders = new Set();
+        links.forEach(l => { if (l.group) uniqueFolders.add(l.group.trim()); });
+        emptyFolders.forEach(folder => uniqueFolders.add(folder));
+        uniqueFolders.forEach(folder => {
+            const option = document.createElement('option');
+            option.value = folder;
+            datalist.appendChild(option);
+        });
+    }
+
+    function filterLinks() {
+        const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+        const filtered = allLinks.filter(link => {
+            const folderName = link.group || 'Tools & Utilities';
+            return link.name.toLowerCase().includes(searchTerm) || 
+                   link.url.toLowerCase().includes(searchTerm) ||
+                   folderName.toLowerCase().includes(searchTerm);
+        });
+        renderFolders(filtered);
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toastNotification');
+        toast.innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    function copyToClipboard(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text)
+                .then(() => showToast("📋 Copied Hyperlink format!"))
+                .catch(() => fallbackCopyToClipboard(text));
+        } else {
+            fallbackCopyToClipboard(text);
+        }
+    }
+
+    function fallbackCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed"; 
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast("📋 Copied Hyperlink format!");
+        } catch (err) {
+            alert('Fallback clipboard operations failed execution.');
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function renderFolders(linksToDisplay) {
+        const container = document.getElementById('foldersContainer');
+        container.innerHTML = ''; 
+
+        const folders = {};
+        emptyFolders.forEach(folder => { folders[folder] = []; });
+        
+        linksToDisplay.forEach(link => {
+            const folderName = link.group && link.group.trim() !== '' ? link.group.trim() : 'Tools & Utilities';
+            if (!folders[folderName]) folders[folderName] = [];
+            folders[folderName].push(link);
+        });
+
+        const activeFolderNames = Object.keys(folders);
+        if (activeFolderNames.length === 0) {
+            container.innerHTML = '<div class="message-box">No active systems found.</div>';
+            return;
+        }
+
+        activeFolderNames.forEach(folderName => {
+            const currentFolderLinks = folders[folderName];
+            const folderBox = document.createElement('div');
+            folderBox.className = 'folder-box';
+            
+            const folderHeader = document.createElement('div');
+            folderHeader.className = 'folder-header';
+            
+            const targetDataAttr = btoa(unescape(encodeURIComponent(JSON.stringify(currentFolderLinks))));
+
+            folderHeader.innerHTML = `
+                <div class="folder-title-area">
+                    <span class="folder-badge"></span>
+                    <span>📁 ${folderName}</span>
+                </div>
+                <div class="folder-actions">
+                    <button class="action-btn" onclick="executeFolderCopy('${targetDataAttr}')">📄 Copy Stack</button>
+                    <button class="action-btn danger-btn" onclick="deleteFolder('${folderName}', ${currentFolderLinks.length})">🗑️ Delete Folder</button>
+                </div>
+            `;
+            folderBox.appendChild(folderHeader);
+
+            const filesList = document.createElement('div');
+            filesList.className = 'files-list';
+
+            if (currentFolderLinks.length === 0) {
+                filesList.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">This folder is empty</div>`;
+            } else {
+                currentFolderLinks.forEach(link => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    
+                    fileItem.innerHTML = `
+                        <div class="file-info">
+                            <span class="file-name">${link.name}</span>
+                            <a href="${link.url.startsWith('http') ? link.url : 'http://' + link.url}" target="_blank" class="file-link">${link.url}</a>
+                        </div>
+                        <div class="file-control-panel">
+                            <button class="action-btn" onclick="copyToClipboard('[${link.name}](${link.url})')">📋 Copy</button>
+                            <button class="action-btn" onclick="renameLink(${link.id}, '${link.name}', '${link.url}', '${folderName}')">✏️ Rename</button>
+                            <button class="action-btn danger-btn" onclick="deleteLink(${link.id}, '${link.name}')">🗑️ Delete</button>
+                        </div>
+                    `;
+                    filesList.appendChild(fileItem);
+                });
+            }
+
+            folderBox.appendChild(filesList);
+            container.appendChild(folderBox);
+        });
+    }
+
+    function executeFolderCopy(encodedData) {
+        const decodedLinks = JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+        const stack = decodedLinks.map(link => `[${link.name}](${link.url})`).join('\n');
+        copyToClipboard(stack);
+    }
+
+    function deleteFolder(folderName, itemCount) {
+        if (itemCount > 0) {
+            alert(`⛔ Action Blocked: The folder "${folderName}" contains ${itemCount} items. You can only delete a folder if it is completely empty.`);
+            return;
+        }
+        
+        if (confirm(`Would you like to delete the folder "${folderName}"?`)) {
+            emptyFolders.delete(folderName);
+            showToast(`Folder "${folderName}" deleted.`);
+            loadLinks();
+        }
+    }
+
+    async function deleteLink(id, name) {
+        if (!confirm(`Would you like to delete the data link "${name}"?`)) return;
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                const brokenLink = allLinks.find(l => l.id === id);
+                if (brokenLink && brokenLink.group) {
+                    const remainingInGroup = allLinks.filter(l => l.group === brokenLink.group && l.id !== id);
+                    if (remainingInGroup.length === 0) {
+                        emptyFolders.add(brokenLink.group.trim());
+                    }
+                }
+                showToast("Data point destroyed successfully.");
+                loadLinks();
+            }
+        } catch (err) {
+            alert('Could not execute delete request on API database endpoint.');
+        }
+    }
+
+    async function renameLink(id, oldName, oldUrl, currentGroup) {
+        const newName = prompt("Enter new name for this shortcut:", oldName);
+        if (newName === null) return; 
+        
+        const newUrl = prompt("Enter new URL endpoint path:", oldUrl);
+        if (newUrl === null) return;
+
+        if (!newName.trim() || !newUrl.trim()) return alert("Fields cannot be left blank.");
+
+        try {
+            const res = await fetch(`${API_URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: newName.trim(), url: newUrl.trim(), group: currentGroup })
+            });
+            if (res.ok) {
+                showToast("System record successfully updated.");
+                loadLinks();
+            }
+        } catch (err) {
+            alert('Failed to save update configuration alterations.');
+        }
+    }
+
+    async function saveLink() {
+        const name = document.getElementById('linkName').value.trim();
+        const url = document.getElementById('linkUrl').value.trim();
+        let group = document.getElementById('linkGroup').value.trim();
+
+        if (!name || !url) return alert('Metadata incomplete.');
+        if (!group) group = 'Tools & Utilities';
+
+        try {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, url, group })
+            });
+            
+            emptyFolders.delete(group);
+
+            document.getElementById('linkName').value = '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkGroup').value = '';
+            loadLinks();
+        } catch (err) {
+            alert('Write operations failed.');
+        }
+    }
+
+    loadLinks();
+</script>
+
+</body>
+</html>
