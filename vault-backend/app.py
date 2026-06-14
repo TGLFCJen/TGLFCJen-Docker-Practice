@@ -11,9 +11,9 @@ CORS(app)
 
 # 🌐 Config Parameters
 DB_HOST = os.getenv('DB_HOST', 'postgres-db')
-DB_USER = os.getenv('DB_USER', 'vault_admin')
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'SecretVaultPassword123!')
-DB_NAME = os.getenv('DB_NAME', 'link_vault_prod')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_NAME = os.getenv('DB_NAME')
 
 def get_db_connection():
     return psycopg2.connect(

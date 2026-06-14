@@ -1,0 +1,53 @@
+services:
+  
+  database:
+    image: postgres:15-alpine
+    container_name: production-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - network-bridge
+
+
+  backend:
+    build: ./vault-backend
+    image: vault-backend:v1
+    container_name: backend-container
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      DB_HOST: postgres-db
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - "9000:9000"
+    networks:
+      - network-bridge
+
+
+
+  frontend:
+    build: ./vault-frontend
+    image: vault-frontend:v1
+    container_name: frontend-container
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - network-bridge
+  
+networks:
+  network-bridge:
+    driver: bridge
+
+volumes:
+  postgres_data:
